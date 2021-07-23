@@ -1,0 +1,44 @@
+<html lang="en">
+<%- include("../partials/head.ejs") %>
+
+<body>
+  <%- include("../partials/nav.ejs") %>
+
+  <div class="details content">
+    <h2><%= blog.title %></h2>
+    <div class="heading">
+      Author: <%= blog.author.name %> 
+    </div>
+    <div class="content">
+      <p><%= blog.body %></p>
+    </div>
+    <a data-doc="<%= blog._id %> " class="delete">
+      <img src="/trashcan.svg" alt="delete icon">
+    </a>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  </div>
+
+  <%- include("../partials/footer.ejs") %>
+
+  <script>
+    const trashCan = document.querySelector('a.delete');
+    const token = document.querySelector('input[name="_csrf"]').value;
+    
+    trashCan.addEventListener('click', function(e) {
+      const endPoint = `/blogs/${trashCan.dataset.doc}`;
+      fetch(endPoint, {
+        method: 'DELETE',
+        headers: {
+          "CSRF-Token": token
+        }
+      })
+      .then((response) => {
+        response.json()
+        .then(data => window.location.href = data.redirect)
+      }).catch((err) => {
+        console.log(err);
+      });
+    })
+  </script>
+</body>
+</html>
